@@ -111,6 +111,10 @@ const socialLinks = [
   },
 ];
 
+const dfwMapEmbedSrc =
+  "https://www.google.com/maps?q=32.8998,-97.0403&z=9&output=embed";
+const dfwMapLink = "https://www.google.com/maps?q=32.8998,-97.0403&z=9";
+
 function PackageMark({ active }: { active: boolean }) {
   if (active) {
     return (
@@ -586,7 +590,7 @@ export default async function Home({
             </div>
             <iframe
               title="Dallas Fort Worth service area map"
-              src="https://maps.google.com/maps?q=Dallas%20Fort%20Worth%20TX&t=&z=9&ie=UTF8&iwloc=&output=embed"
+              src={dfwMapEmbedSrc}
               className="relative h-[420px] w-full rounded-[1.8rem] border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -679,7 +683,7 @@ export default async function Home({
                 Email: comeup.detailing@gmail.com
               </a>
               <a
-                href="https://maps.google.com/?q=Dallas-Fort+Worth,+TX"
+                href={dfwMapLink}
                 target="_blank"
                 rel="noreferrer"
                 className="transition hover:text-orange-200"

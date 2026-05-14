@@ -168,6 +168,7 @@ export function BookingWidget({
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [bookingSaved, setBookingSaved] = useState(false);
   const [formData, setFormData] = useState(() => buildInitialForm(initialService));
 
   async function loadBookings() {
@@ -198,11 +199,13 @@ export function BookingWidget({
       isSlotPast(selectedDate, selectedSlot);
 
     if (selectedSlotUnavailable) {
+      setBookingSaved(false);
       setMessage("Choose a date and one of the available time slots first.");
       return;
     }
 
     setSubmitting(true);
+    setBookingSaved(false);
     setMessage("");
 
     try {
@@ -221,17 +224,20 @@ export function BookingWidget({
       const data = (await response.json()) as { message?: string };
 
       if (!response.ok) {
+        setBookingSaved(false);
         setMessage(data.message ?? "That time just became unavailable.");
         return;
       }
 
       setFormData(buildInitialForm(initialService));
       setSelectedSlot("");
+      setBookingSaved(true);
       setMessage(
         "Appointment request saved. Reach out to confirm by text and send any required deposit by Zelle.",
       );
       await loadBookings();
     } catch {
+      setBookingSaved(false);
       setMessage("Something went wrong while saving your appointment request.");
     } finally {
       setSubmitting(false);
@@ -595,7 +601,34 @@ export function BookingWidget({
         </button>
 
         {message ? (
-          <p className="mt-4 text-sm leading-6 text-slate-600">{message}</p>
+          bookingSaved ? (
+            <div className="booking-success-pop mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-6 text-emerald-800">
+              <div className="flex items-start gap-3">
+                <span className="booking-success-check mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 20 20"
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                  >
+                    <path d="M4.5 10.5l3.5 3.5 7-8" />
+                  </svg>
+                </span>
+                <div>
+                  <p className="font-semibold text-emerald-950">
+                    Appointment request received
+                  </p>
+                  <p className="mt-1">{message}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-4 text-sm leading-6 text-slate-600">{message}</p>
+          )
         ) : null}
       </form>
     </div>

@@ -91,6 +91,14 @@ main {
   animation: shine-sweep 8s ease-in-out infinite;
 }
 
+.booking-success-pop {
+  animation: booking-success-pop 520ms ease-out both;
+}
+
+.booking-success-check {
+  animation: booking-success-check 700ms ease-out both;
+}
+
 @keyframes float-slow {
   0%, 100% {
     transform: translateY(0);
@@ -117,6 +125,40 @@ main {
   }
   45%, 100% {
     transform: translateX(110%);
+  }
+}
+
+@keyframes booking-success-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes booking-success-check {
+  0% {
+    transform: scale(0.6) rotate(-8deg);
+  }
+  60% {
+    transform: scale(1.12) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-success-pop,
+  .booking-success-check {
+    animation: none;
   }
 }
 

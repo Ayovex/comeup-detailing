@@ -112,10 +112,41 @@ const socialLinks = [
 ];
 
 function PackageMark({ active }: { active: boolean }) {
-  return active ? (
-    <span className="text-xl font-black text-emerald-600">✔</span>
-  ) : (
-    <span className="text-xl font-black text-red-600">✖</span>
+  if (active) {
+    return (
+      <span className="inline-flex items-center justify-center text-emerald-600">
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 20 20"
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M4.5 10.5l3.5 3.5 7-8" />
+        </svg>
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center justify-center text-red-600">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M5 5l10 10" />
+        <path d="M15 5L5 15" />
+      </svg>
+    </span>
   );
 }
 

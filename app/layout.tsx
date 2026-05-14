@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   title: "Comeup Car Detailing | Mobile Detailing Across DFW",
   description:
     "Book mobile car detailing across Dallas-Fort Worth with Comeup Car Detailing. Three daily booking slots, service-first layout, and direct contact links.",
+  icons: {
+    apple: "/apple-touch-icon.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({

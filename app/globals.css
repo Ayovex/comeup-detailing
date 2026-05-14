@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050812;
+  --foreground: #eef7ff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-manrope);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bebas-neue);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 16% 14%, rgba(249, 115, 22, 0.18), transparent 16%),
+    radial-gradient(circle at 22% 20%, rgba(250, 204, 21, 0.14), transparent 18%),
+    radial-gradient(circle at 18% 20%, rgba(56, 189, 248, 0.16), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(59, 130, 246, 0.2), transparent 18%),
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 22%);
+  z-index: 0;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  transition-duration: 180ms;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.panel-glow {
+  box-shadow:
+    0 24px 80px rgba(15, 23, 42, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.lift-card {
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+
+.lift-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 60px rgba(14, 165, 233, 0.18);
+}
+
+.pulse-ring {
+  animation: pulse-ring 4s ease-in-out infinite;
+}
+
+.float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.shine-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-sweep::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(110deg, transparent 36%, rgba(255, 255, 255, 0.18) 50%, transparent 64%);
+  transform: translateX(-110%);
+  animation: shine-sweep 8s ease-in-out infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 0.8;
+  }
+}
+
+@keyframes shine-sweep {
+  0%, 20% {
+    transform: translateX(-110%);
+  }
+  45%, 100% {
+    transform: translateX(110%);
+  }
+}
+
+::selection {
+  background: rgba(249, 115, 22, 0.32);
+  color: #f8fafc;
 }

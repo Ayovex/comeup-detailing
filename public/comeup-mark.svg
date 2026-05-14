@@ -1,0 +1,37 @@
+<svg width="720" height="520" viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="570" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9"/>
+      <stop offset="0.45" stop-color="#1D4ED8"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="chrome" x1="180" y1="250" x2="480" y2="340" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="0.4" stop-color="#D6E6FF"/>
+      <stop offset="0.75" stop-color="#8FB7FF"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <filter id="glow" x="0" y="0" width="720" height="520" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <ellipse cx="360" cy="252" rx="300" ry="170" fill="url(#bg)" opacity="0.22"/>
+  <path d="M88 326C152 217 256 160 403 159C497 159 589 205 651 284" stroke="#38BDF8" stroke-width="22" stroke-linecap="round" opacity="0.2"/>
+  <path d="M104 334C163 246 258 198 384 198C478 198 559 228 621 286" stroke="#F8FAFC" stroke-opacity="0.65" stroke-width="5" stroke-linecap="round"/>
+  <path d="M175 274L250 225H444L517 270" stroke="#38BDF8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="250" cy="305" r="26" stroke="#E2E8F0" stroke-width="10"/>
+  <circle cx="470" cy="305" r="26" stroke="#E2E8F0" stroke-width="10"/>
+  <g filter="url(#glow)">
+    <text x="112" y="366" fill="url(#chrome)" font-family="Brush Script MT, Segoe Script, cursive" font-size="134" font-weight="700">Come Up</text>
+  </g>
+  <path d="M92 380H628V448C628 461.255 617.255 472 604 472H116C102.745 472 92 461.255 92 448V380Z" fill="#020617"/>
+  <path d="M104 393H616V433C616 440.732 609.732 447 602 447H118C110.268 447 104 440.732 104 433V393Z" stroke="#38BDF8" stroke-opacity="0.5" stroke-width="3"/>
+  <text x="166" y="432" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="44" font-weight="700" letter-spacing="4">CAR DETAILING</text>
+  <path d="M152 466H570" stroke="#0EA5E9" stroke-width="8" stroke-linecap="round"/>
+  <text x="170" y="503" fill="#E2E8F0" font-family="Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="2">MOBILE DETAILING • WE COME TO YOU</text>
+</svg>

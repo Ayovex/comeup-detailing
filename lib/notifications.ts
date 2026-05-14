@@ -15,10 +15,14 @@ export async function sendBookingNotification(booking: BookingEntry) {
   const resend = getResendClient();
   const notificationEmail =
     process.env.NOTIFICATION_EMAIL ?? "comeup.detailing@gmail.com";
+  const fromEmail =
+    process.env.RESEND_FROM_EMAIL ??
+    "Comeup Car Detailing <onboarding@resend.dev>";
 
-  await resend.emails.send({
-    from: "Comeup Car Detailing <onboarding@resend.dev>",
+  const { data, error } = await resend.emails.send({
+    from: fromEmail,
     to: [notificationEmail],
+    replyTo: booking.email,
     subject: `New booking request: ${booking.service} on ${booking.date} at ${booking.slot}`,
     text: [
       "New appointment request received.",
@@ -37,4 +41,12 @@ export async function sendBookingNotification(booking: BookingEntry) {
       `Deposit status: ${booking.depositStatus ?? "not_required"}`,
     ].join("\n"),
   });
+
+  if (error) {
+    throw new Error(
+      `Resend could not send the booking notification: ${error.message}`,
+    );
+  }
+
+  return data;
 }

@@ -239,8 +239,8 @@ export function BookingWidget({
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-      <div className="rounded-[2rem] border border-white/10 bg-slate-950/75 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.45)] backdrop-blur">
+    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
+      <div className="rounded-[1.6rem] border border-white/10 bg-slate-950/75 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.45)] backdrop-blur sm:rounded-[2rem] sm:p-6">
         <div className="flex flex-col gap-3 border-b border-white/10 pb-5">
           <span className="w-fit rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
             Book now
@@ -258,22 +258,22 @@ export function BookingWidget({
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
             Pick a date
           </p>
-          <div className="mt-4 rounded-[1.6rem] border border-white/10 bg-white/5 p-4">
+          <div className="mt-4 rounded-[1.4rem] border border-white/10 bg-white/5 p-3 sm:rounded-[1.6rem] sm:p-4">
             <div className="flex items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={() => setVisibleMonth((current) => addMonths(current, -1))}
-                className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-300 hover:bg-cyan-400/10 hover:text-white"
+                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-300 hover:bg-cyan-400/10 hover:text-white sm:px-4"
               >
                 Prev
               </button>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white">
+              <p className="text-center text-xs font-semibold uppercase tracking-[0.16em] text-white sm:text-sm sm:tracking-[0.22em]">
                 {formatMonthLabel(visibleMonth)}
               </p>
               <button
                 type="button"
                 onClick={() => setVisibleMonth((current) => addMonths(current, 1))}
-                className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-300 hover:bg-cyan-400/10 hover:text-white"
+                className="rounded-full border border-white/10 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-300 hover:bg-cyan-400/10 hover:text-white sm:px-4"
               >
                 Next
               </button>
@@ -338,7 +338,7 @@ export function BookingWidget({
               ))}
             </div>
 
-            <div className="mt-3 grid grid-cols-7 gap-2">
+            <div className="mt-3 grid grid-cols-7 gap-1.5 sm:gap-2">
               {calendarDays.map((date) => {
                 const dateValue = formatDateValue(date);
                 const active = selectedDate === dateValue;
@@ -352,7 +352,7 @@ export function BookingWidget({
                     type="button"
                     disabled={disabled}
                     onClick={() => setSelectedDate(dateValue)}
-                    className={`aspect-square rounded-2xl border text-sm font-semibold transition ${
+                    className={`aspect-square rounded-xl border text-sm font-semibold transition sm:rounded-2xl ${
                       active
                         ? "border-cyan-400 bg-cyan-400 text-slate-950"
                         : disabled
@@ -401,7 +401,7 @@ export function BookingWidget({
                   type="button"
                   disabled={disabled}
                   onClick={() => setSelectedSlot(slot)}
-                  className={`rounded-2xl border px-4 py-5 text-center transition ${
+                  className={`rounded-2xl border px-4 py-4 text-center transition sm:py-5 ${
                     disabled
                       ? "cursor-not-allowed border-white/10 bg-white/5 text-slate-500"
                       : active
@@ -422,7 +422,8 @@ export function BookingWidget({
 
       <form
         onSubmit={handleSubmit}
-        className="rounded-[2rem] border border-slate-200 bg-white p-6 text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.16)]"
+        autoComplete="on"
+        className="rounded-[1.6rem] border border-slate-200 bg-white p-4 text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.16)] sm:rounded-[2rem] sm:p-6"
       >
         <div className="border-b border-slate-200 pb-5">
           <h3 className="text-2xl font-semibold">Request your appointment</h3>
@@ -433,7 +434,7 @@ export function BookingWidget({
           </p>
         </div>
 
-        <div className="mt-6 grid gap-4">
+        <div className="mt-5 grid gap-4 sm:mt-6">
           <label className="grid gap-2 text-sm font-medium">
             Service requested
             <select
@@ -478,6 +479,7 @@ export function BookingWidget({
             Full name
             <input
               required
+              name="name"
               value={formData.name}
               onChange={(event) =>
                 setFormData((current) => ({
@@ -487,6 +489,7 @@ export function BookingWidget({
               }
               className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-cyan-500"
               placeholder="Your name"
+              autoComplete="name"
             />
           </label>
 
@@ -495,6 +498,7 @@ export function BookingWidget({
               Phone
               <input
                 required
+                name="phone"
                 value={formData.phone}
                 onChange={(event) =>
                   setFormData((current) => ({
@@ -504,6 +508,8 @@ export function BookingWidget({
                 }
                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-cyan-500"
                 placeholder="469-793-2207"
+                autoComplete="tel"
+                inputMode="tel"
               />
             </label>
 
@@ -511,6 +517,7 @@ export function BookingWidget({
               Email
               <input
                 required
+                name="email"
                 type="email"
                 value={formData.email}
                 onChange={(event) =>
@@ -521,6 +528,8 @@ export function BookingWidget({
                 }
                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-cyan-500"
                 placeholder="you@example.com"
+                autoComplete="email"
+                inputMode="email"
               />
             </label>
           </div>
@@ -529,6 +538,7 @@ export function BookingWidget({
             Service address
             <input
               required
+              name="street-address"
               value={formData.address}
               onChange={(event) =>
                 setFormData((current) => ({
@@ -538,6 +548,7 @@ export function BookingWidget({
               }
               className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-cyan-500"
               placeholder="Where should we come to you?"
+              autoComplete="street-address"
             />
           </label>
 
@@ -557,9 +568,11 @@ export function BookingWidget({
           </label>
         </div>
 
-        <div className="mt-6 rounded-2xl bg-slate-950 px-4 py-4 text-sm text-slate-200">
+        <div className="mt-5 rounded-2xl bg-slate-950 px-4 py-4 text-sm text-slate-200 sm:mt-6">
           <p className="font-semibold text-white">
-            Selected appointment: {formatDateLabel(selectedDate)}
+            <span className="block sm:inline">
+              Selected appointment: {formatDateLabel(selectedDate)}
+            </span>
             {selectedSlot &&
             !bookings.some(
               (booking) =>

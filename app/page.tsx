@@ -114,6 +114,8 @@ const socialLinks = [
 const dfwMapEmbedSrc =
   "https://www.google.com/maps?q=32.8998,-97.0403&z=9&output=embed";
 const dfwMapLink = "https://www.google.com/maps?q=32.8998,-97.0403&z=9";
+const contactEmail =
+  process.env.NOTIFICATION_EMAIL ?? "comeup.detailing@gmail.com";
 
 function PackageMark({ active }: { active: boolean }) {
   if (active) {
@@ -643,10 +645,10 @@ export default async function Home({
                 469-793-2207
               </a>
               <a
-                href="mailto:comeup.detailing@gmail.com"
+                href={`mailto:${contactEmail}`}
                 className="rounded-full border border-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/5"
               >
-                comeup.detailing@gmail.com
+                {contactEmail}
               </a>
             </div>
           </div>
@@ -676,11 +678,8 @@ export default async function Home({
               <a href="tel:4697932207" className="transition hover:text-orange-200">
                 Call: 469-793-2207
               </a>
-              <a
-                href="mailto:comeup.detailing@gmail.com"
-                className="transition hover:text-orange-200"
-              >
-                Email: comeup.detailing@gmail.com
+              <a href={`mailto:${contactEmail}`} className="transition hover:text-orange-200">
+                Email: {contactEmail}
               </a>
               <a
                 href={dfwMapLink}

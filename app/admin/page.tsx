@@ -396,9 +396,74 @@ export default async function AdminPage({
           </div>
         </div>
 
+        <div className="mt-8 rounded-[2rem] border border-slate-200 bg-white/96 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-700">
+                Upcoming appointments
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-slate-900">
+                Quick view
+              </h2>
+            </div>
+            <div className="rounded-full bg-slate-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+              {upcomingBookings.length} upcoming
+            </div>
+          </div>
+
+          <div className="mt-5 overflow-x-auto">
+            {upcomingBookings.length === 0 ? (
+              <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-sm text-slate-500">
+                No pending or confirmed appointments are scheduled in the future yet.
+              </div>
+            ) : (
+              <table className="min-w-full text-left text-sm">
+                <thead className="border-b border-slate-200 text-xs uppercase tracking-[0.16em] text-slate-500">
+                  <tr>
+                    <th className="py-3 pr-4 font-semibold">Date</th>
+                    <th className="py-3 pr-4 font-semibold">Customer</th>
+                    <th className="py-3 pr-4 font-semibold">Service</th>
+                    <th className="py-3 pr-4 font-semibold">Status</th>
+                    <th className="py-3 pr-4 font-semibold">Paid</th>
+                    <th className="py-3 font-semibold">Address</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {upcomingBookings.map((booking) => (
+                    <tr key={`upcoming-table-${booking.id ?? `${booking.date}-${booking.slot}-${booking.email}`}`}>
+                      <td className="whitespace-nowrap py-3 pr-4 font-medium text-slate-900">
+                        {formatDateTime(booking)}
+                      </td>
+                      <td className="whitespace-nowrap py-3 pr-4 text-slate-700">
+                        {booking.name}
+                      </td>
+                      <td className="whitespace-nowrap py-3 pr-4 text-slate-700">
+                        {booking.service}
+                      </td>
+                      <td className="whitespace-nowrap py-3 pr-4">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${statusClasses(
+                            getStatusValue(booking.status),
+                          )}`}
+                        >
+                          {getStatusValue(booking.status)}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap py-3 pr-4 text-slate-700">
+                        {getDepositValue(booking.depositStatus)}
+                      </td>
+                      <td className="min-w-64 py-3 text-slate-600">{booking.address}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
         <div className="mt-8 grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
           <div className="grid gap-8">
-            <div className="rounded-[2rem] border border-slate-200 bg-white/96 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
+            <div className="hidden">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-700">

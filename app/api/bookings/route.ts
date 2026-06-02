@@ -98,7 +98,7 @@ export async function POST(request: Request) {
       notes: body.notes ?? "",
       createdAt: new Date().toISOString(),
       status: "new",
-      depositStatus: "not_required",
+      depositStatus: "no",
     });
 
     try {

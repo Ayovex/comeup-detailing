@@ -25,6 +25,14 @@ export type CustomerProfile = {
   updatedAt?: string;
 };
 
+function normalizeDepositStatus(status?: string) {
+  if (status === "received" || status === "yes") {
+    return "yes";
+  }
+
+  return "no";
+}
+
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -97,7 +105,7 @@ export async function readBookings() {
       notes: booking.notes ?? "",
       createdAt: booking.created_at,
       status: booking.status ?? "new",
-      depositStatus: booking.deposit_status ?? "not_required",
+      depositStatus: normalizeDepositStatus(booking.deposit_status),
     })) as BookingEntry[];
   } catch (error) {
     console.error("Supabase readBookings failed:", error);
@@ -120,7 +128,7 @@ export async function saveBooking(entry: BookingEntry) {
       address: entry.address,
       notes: entry.notes,
       status: entry.status ?? "new",
-      deposit_status: entry.depositStatus ?? "not_required",
+      deposit_status: normalizeDepositStatus(entry.depositStatus),
     })
     .select(
       "id, booking_date, booking_slot, service, vehicle_type, customer_name, phone, email, address, notes, created_at, status, deposit_status",
@@ -144,7 +152,7 @@ export async function saveBooking(entry: BookingEntry) {
     notes: data.notes ?? "",
     createdAt: data.created_at,
     status: data.status ?? "new",
-    depositStatus: data.deposit_status ?? "not_required",
+    depositStatus: normalizeDepositStatus(data.deposit_status),
   } satisfies BookingEntry;
 }
 
@@ -161,7 +169,7 @@ export async function updateBookingStatus(input: {
   }
 
   if (input.depositStatus) {
-    updates.deposit_status = input.depositStatus;
+    updates.deposit_status = normalizeDepositStatus(input.depositStatus);
   }
 
   const { error } = await supabase.from("bookings").update(updates).eq("id", input.id);

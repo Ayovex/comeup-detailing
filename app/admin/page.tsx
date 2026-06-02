@@ -26,12 +26,18 @@ type CustomerSummary = {
   totalVisits: number;
   lastVisit: string;
   internalNotes: string;
+  confirmedCount: number;
+  cancelledCount: number;
 };
 
 type GroupNode = {
   key: string;
   booking: BookingEntry;
 };
+
+function isConfirmedStatus(status?: string) {
+  return status === "confirmed" || status === "completed";
+}
 
 function groupBookingsIntoCustomers(
   bookings: BookingEntry[],
@@ -108,6 +114,8 @@ function groupBookingsIntoCustomers(
     if (existing) {
       existing.bookings.push(booking);
       existing.totalVisits += 1;
+      existing.confirmedCount += isConfirmedStatus(booking.status) ? 1 : 0;
+      existing.cancelledCount += booking.status === "cancelled" ? 1 : 0;
 
       if (`${booking.date} ${booking.slot}` > `${existing.lastVisit} 00:00 AM`) {
         existing.lastVisit = booking.date;
@@ -132,6 +140,8 @@ function groupBookingsIntoCustomers(
       totalVisits: 1,
       lastVisit: booking.date,
       internalNotes: profileMap.get(customerKey)?.internalNotes ?? "",
+      confirmedCount: isConfirmedStatus(booking.status) ? 1 : 0,
+      cancelledCount: booking.status === "cancelled" ? 1 : 0,
     });
   }
 
@@ -173,8 +183,6 @@ function filterCustomers(customers: CustomerSummary[], search: string) {
 
 function statusClasses(status?: string) {
   switch (status) {
-    case "completed":
-      return "bg-emerald-100 text-emerald-700";
     case "confirmed":
       return "bg-blue-100 text-blue-700";
     case "cancelled":
@@ -186,18 +194,26 @@ function statusClasses(status?: string) {
 
 function depositClasses(status?: string) {
   switch (status) {
-    case "received":
+    case "yes":
       return "bg-emerald-100 text-emerald-700";
-    case "requested":
-      return "bg-orange-100 text-orange-700";
-    default:
+    case "no":
       return "bg-slate-100 text-slate-700";
+    default:
+      return "bg-orange-100 text-orange-700";
   }
 }
 
-const STATUS_OPTIONS = ["new", "confirmed", "completed", "cancelled"];
-const DEPOSIT_OPTIONS = ["not_required", "requested", "received"];
+const STATUS_OPTIONS = ["new", "confirmed", "cancelled"];
+const DEPOSIT_OPTIONS = ["yes", "no"];
 const CUSTOMERS_PER_PAGE = 25;
+
+function getStatusValue(status?: string) {
+  return status === "completed" ? "confirmed" : (status ?? "new");
+}
+
+function getDepositValue(status?: string) {
+  return status === "yes" ? "yes" : "no";
+}
 
 function buildAdminHref(input: {
   search?: string;
@@ -493,7 +509,7 @@ export default async function AdminPage({
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 md:grid-cols-3">
+                <div className="mt-6 grid gap-4 md:grid-cols-5">
                   <div className="rounded-[1.5rem] bg-slate-50 p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
                       Total visits
@@ -516,6 +532,22 @@ export default async function AdminPage({
                     </p>
                     <p className="mt-2 text-lg font-semibold text-slate-900">
                       {selectedCustomer.bookings[0]?.service ?? "N/A"}
+                    </p>
+                  </div>
+                  <div className="rounded-[1.5rem] bg-slate-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                      Confirmed
+                    </p>
+                    <p className="mt-2 text-3xl font-semibold text-slate-900">
+                      {selectedCustomer.confirmedCount}
+                    </p>
+                  </div>
+                  <div className="rounded-[1.5rem] bg-slate-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                      Cancelled
+                    </p>
+                    <p className="mt-2 text-3xl font-semibold text-slate-900">
+                      {selectedCustomer.cancelledCount}
                     </p>
                   </div>
                 </div>
@@ -599,10 +631,10 @@ export default async function AdminPage({
                               Status
                               <select
                                 name="status"
-                                defaultValue={booking.status ?? "new"}
+                                defaultValue={getStatusValue(booking.status)}
                                 suppressHydrationWarning
                                 className={`rounded-full border border-transparent px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] outline-none ${statusClasses(
-                                  booking.status,
+                                  getStatusValue(booking.status),
                                 )}`}
                               >
                                 {STATUS_OPTIONS.map((status) => (
@@ -613,13 +645,13 @@ export default async function AdminPage({
                               </select>
                             </label>
                             <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                              Deposit
+                              Paid
                               <select
                                 name="depositStatus"
-                                defaultValue={booking.depositStatus ?? "not_required"}
+                                defaultValue={getDepositValue(booking.depositStatus)}
                                 suppressHydrationWarning
                                 className={`rounded-full border border-transparent px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] outline-none ${depositClasses(
-                                  booking.depositStatus,
+                                  getDepositValue(booking.depositStatus),
                                 )}`}
                               >
                                 {DEPOSIT_OPTIONS.map((status) => (

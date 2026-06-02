@@ -22,6 +22,10 @@ function getMailConfig() {
   };
 }
 
+function formatDepositStatus(status?: string) {
+  return status === "yes" ? "yes" : "no";
+}
+
 export async function sendBookingNotification(booking: BookingEntry) {
   const { resend, notificationEmail, fromEmail } = getMailConfig();
 
@@ -44,7 +48,7 @@ export async function sendBookingNotification(booking: BookingEntry) {
       `Notes: ${booking.notes || "None"}`,
       "",
       `Status: ${booking.status ?? "new"}`,
-      `Deposit status: ${booking.depositStatus ?? "not_required"}`,
+      `Paid: ${formatDepositStatus(booking.depositStatus)}`,
     ].join("\n"),
   });
 

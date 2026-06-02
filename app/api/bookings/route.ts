@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { readBookings, saveBooking } from "@/lib/bookings";
-import { sendBookingNotification } from "@/lib/notifications";
+import {
+  sendBookingConfirmation,
+  sendBookingNotification,
+} from "@/lib/notifications";
 
 const ALLOWED_SLOTS = new Set(["10:00 AM", "2:00 PM", "6:00 PM"]);
 
@@ -99,9 +102,12 @@ export async function POST(request: Request) {
     });
 
     try {
-      await sendBookingNotification(savedBooking);
+      await Promise.all([
+        sendBookingNotification(savedBooking),
+        sendBookingConfirmation(savedBooking),
+      ]);
     } catch (notificationError) {
-      console.error("Booking saved, but email notification failed:", notificationError);
+      console.error("Booking saved, but at least one email send failed:", notificationError);
     }
 
     return NextResponse.json({ ok: true });

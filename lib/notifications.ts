@@ -47,7 +47,7 @@ export async function sendBookingNotification(booking: BookingEntry) {
       `Address: ${booking.address}`,
       `Notes: ${booking.notes || "None"}`,
       "",
-      `Status: ${booking.status ?? "new"}`,
+      `Status: ${booking.status ?? "pending"}`,
       `Paid: ${formatDepositStatus(booking.depositStatus)}`,
     ].join("\n"),
   });

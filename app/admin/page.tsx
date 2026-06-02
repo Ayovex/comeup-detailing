@@ -35,8 +35,45 @@ type GroupNode = {
   booking: BookingEntry;
 };
 
+function getStatusValue(status?: string) {
+  if (status === "completed") {
+    return "confirmed";
+  }
+
+  if (status === "new") {
+    return "pending";
+  }
+
+  return status ?? "pending";
+}
+
 function isConfirmedStatus(status?: string) {
   return status === "confirmed" || status === "completed";
+}
+
+function isUpcomingStatus(status?: string) {
+  const value = getStatusValue(status);
+  return value === "pending" || value === "confirmed";
+}
+
+function to24HourTime(slot: string) {
+  const [time, period] = slot.split(" ");
+  const [hourPart, minutePart] = time.split(":");
+  let hour = Number(hourPart);
+
+  if (period === "PM" && hour !== 12) {
+    hour += 12;
+  }
+
+  if (period === "AM" && hour === 12) {
+    hour = 0;
+  }
+
+  return `${String(hour).padStart(2, "0")}:${minutePart}:00`;
+}
+
+function getBookingDateTimeValue(booking: BookingEntry) {
+  return new Date(`${booking.date}T${to24HourTime(booking.slot)}`).getTime();
 }
 
 function groupBookingsIntoCustomers(
@@ -203,13 +240,9 @@ function depositClasses(status?: string) {
   }
 }
 
-const STATUS_OPTIONS = ["new", "confirmed", "cancelled"];
+const STATUS_OPTIONS = ["pending", "confirmed", "cancelled"];
 const DEPOSIT_OPTIONS = ["yes", "no"];
 const CUSTOMERS_PER_PAGE = 25;
-
-function getStatusValue(status?: string) {
-  return status === "completed" ? "confirmed" : (status ?? "new");
-}
 
 function getDepositValue(status?: string) {
   return status === "yes" ? "yes" : "no";
@@ -279,11 +312,26 @@ export default async function AdminPage({
 
   const totalCustomers = customers.length;
   const totalBookings = bookings.length;
-  const newBookings = bookings.filter((booking) => booking.status === "new").length;
+  const pendingBookings = bookings.filter(
+    (booking) => getStatusValue(booking.status) === "pending",
+  ).length;
   const thisMonth = new Date().toISOString().slice(0, 7);
   const thisMonthBookings = bookings.filter((booking) =>
     booking.date.startsWith(thisMonth),
   ).length;
+  const now = new Date().getTime();
+  const upcomingBookings = bookings
+    .filter(
+      (booking) =>
+        isUpcomingStatus(booking.status) && getBookingDateTimeValue(booking) >= now,
+    )
+    .sort((a, b) => getBookingDateTimeValue(a) - getBookingDateTimeValue(b));
+  const selectedCustomerUpcomingBookings = (selectedCustomer?.bookings ?? [])
+    .filter(
+      (booking) =>
+        isUpcomingStatus(booking.status) && getBookingDateTimeValue(booking) >= now,
+    )
+    .sort((a, b) => getBookingDateTimeValue(a) - getBookingDateTimeValue(b));
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#020617_0%,#081225_28%,#eef4fb_28%,#f8fbff_100%)]">
@@ -335,9 +383,9 @@ export default async function AdminPage({
             </div>
             <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
               <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
-                New requests
+                Pending requests
               </p>
-              <p className="mt-2 text-3xl font-semibold">{newBookings}</p>
+              <p className="mt-2 text-3xl font-semibold">{pendingBookings}</p>
             </div>
             <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
               <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
@@ -349,7 +397,64 @@ export default async function AdminPage({
         </div>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
-          <div className="rounded-[2rem] border border-slate-200 bg-white/96 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
+          <div className="grid gap-8">
+            <div className="rounded-[2rem] border border-slate-200 bg-white/96 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-700">
+                    Upcoming appointments
+                  </p>
+                  <h2 className="mt-2 text-2xl font-semibold text-slate-900">
+                    Quick view of what is coming up
+                  </h2>
+                </div>
+                <div className="rounded-full bg-slate-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                  {upcomingBookings.length} upcoming
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-3">
+                {upcomingBookings.length === 0 ? (
+                  <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-sm text-slate-500">
+                    No pending or confirmed appointments are scheduled in the future yet.
+                  </div>
+                ) : (
+                  upcomingBookings.map((booking) => (
+                    <article
+                      key={`upcoming-${booking.id ?? `${booking.date}-${booking.slot}-${booking.email}`}`}
+                      className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4"
+                    >
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <p className="text-lg font-semibold text-slate-900">{booking.name}</p>
+                          <p className="mt-1 text-sm text-slate-600">
+                            {booking.service} • {booking.vehicleType}
+                          </p>
+                          <p className="mt-1 text-sm text-slate-500">
+                            {formatDateTime(booking)}
+                          </p>
+                          <p className="mt-1 text-sm text-slate-500">{booking.address}</p>
+                        </div>
+                        <div className="flex flex-col items-start gap-2 sm:items-end">
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${statusClasses(
+                              getStatusValue(booking.status),
+                            )}`}
+                          >
+                            {getStatusValue(booking.status)}
+                          </span>
+                          <span className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                            Paid: {getDepositValue(booking.depositStatus)}
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-200 bg-white/96 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-700">
@@ -471,6 +576,7 @@ export default async function AdminPage({
               </div>
             ) : null}
           </div>
+          </div>
 
           <div className="rounded-[2rem] border border-slate-200 bg-white/96 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
             {!selectedCustomer ? (
@@ -549,6 +655,58 @@ export default async function AdminPage({
                     <p className="mt-2 text-3xl font-semibold text-slate-900">
                       {selectedCustomer.cancelledCount}
                     </p>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-700">
+                        Upcoming appointments
+                      </p>
+                      <h3 className="mt-2 text-2xl font-semibold text-slate-900">
+                        Future pending and confirmed bookings for this customer
+                      </h3>
+                    </div>
+                    <div className="rounded-full bg-slate-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                      {selectedCustomerUpcomingBookings.length} upcoming
+                    </div>
+                  </div>
+
+                  <div className="mt-5 grid gap-3">
+                    {selectedCustomerUpcomingBookings.length === 0 ? (
+                      <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-sm text-slate-500">
+                        This customer has no pending or confirmed future appointments right now.
+                      </div>
+                    ) : (
+                      selectedCustomerUpcomingBookings.map((booking) => (
+                        <article
+                          key={`customer-upcoming-${booking.id ?? `${booking.date}-${booking.slot}-${booking.email}`}`}
+                          className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4"
+                        >
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                              <p className="text-lg font-semibold text-slate-900">
+                                {booking.service}
+                              </p>
+                              <p className="mt-1 text-sm text-slate-600">
+                                {formatDateTime(booking)}
+                              </p>
+                              <p className="mt-1 text-sm text-slate-500">
+                                Vehicle: {booking.vehicleType}
+                              </p>
+                            </div>
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${statusClasses(
+                                getStatusValue(booking.status),
+                              )}`}
+                            >
+                              {getStatusValue(booking.status)}
+                            </span>
+                          </div>
+                        </article>
+                      ))
+                    )}
                   </div>
                 </div>
 

@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       address: body.address,
       notes: body.notes ?? "",
       createdAt: new Date().toISOString(),
-      status: "new",
+      status: "pending",
       depositStatus: "no",
     });
 

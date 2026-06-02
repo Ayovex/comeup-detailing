@@ -104,7 +104,7 @@ export async function readBookings() {
       address: booking.address,
       notes: booking.notes ?? "",
       createdAt: booking.created_at,
-      status: booking.status ?? "new",
+      status: booking.status ?? "pending",
       depositStatus: normalizeDepositStatus(booking.deposit_status),
     })) as BookingEntry[];
   } catch (error) {
@@ -127,7 +127,7 @@ export async function saveBooking(entry: BookingEntry) {
       email: entry.email,
       address: entry.address,
       notes: entry.notes,
-      status: entry.status ?? "new",
+      status: entry.status ?? "pending",
       deposit_status: normalizeDepositStatus(entry.depositStatus),
     })
     .select(
@@ -151,7 +151,7 @@ export async function saveBooking(entry: BookingEntry) {
     address: data.address,
     notes: data.notes ?? "",
     createdAt: data.created_at,
-    status: data.status ?? "new",
+    status: data.status ?? "pending",
     depositStatus: normalizeDepositStatus(data.deposit_status),
   } satisfies BookingEntry;
 }
